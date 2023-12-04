@@ -1,0 +1,41 @@
+From ca82afa20436beaef99dff9d36930274c9bd4d41 Mon Sep 17 00:00:00 2001
+From: Kazuho Sasaki <sasaki.kazuho@meta.co.jp>
+Date: Mon, 4 Dec 2023 11:58:30 +0900
+Subject: [PATCH] Fix a missing header inclusion
+
+This is a follow-up patch of
+"libcrack2-error-safer-check-variant.patch", which causes build failure
+of tests.
+
+FIX:
+| In file included from ../../cracklib-2.9.6/util/teststr.c:9:
+| ../../cracklib-2.9.6/lib/crack.h:32:41: error: unknown type name 'size_t'
+|                                          size_t errmsg_len);
+|                                          ^~~~~~
+| ../../cracklib-2.9.6/lib/crack.h:32:41: note: 'size_t' is defined in header '<stddef.h>'; did you forget to '#include <stddef.h>'?
+| ../../cracklib-2.9.6/lib/crack.h:1:1:
+| +#include <stddef.h>
+|  #ifndef CRACKLIB_H
+| ../../cracklib-2.9.6/lib/crack.h:32:41:
+|                                          size_t errmsg_len);
+|                                          ^~~~~~
+| make[2]: *** [Makefile:562: teststr.o] Error 1
+
+Signed-off-by: Kazuho Sasaki <sasaki.kazuho@meta.co.jp>
+---
+ lib/crack.h | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/lib/crack.h b/lib/crack.h
+index 2e83f5a..bf095ea 100644
+--- a/lib/crack.h
++++ b/lib/crack.h
+@@ -1,6 +1,8 @@
+ #ifndef CRACKLIB_H
+ #define CRACKLIB_H
+ 
++#include <stddef.h>
++
+ #ifdef __cplusplus
+ extern "C" {
+ #endif
